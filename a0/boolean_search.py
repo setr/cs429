@@ -21,9 +21,17 @@ def tokenize(document):
     >>> tokenize("Hi  there. What's going on?")
     ['hi', 'there', 'what', 's', 'going', 'on']
     """
-    ###TODO
-    pass
-
+    # drop punctuation
+    punctuation  = "~`!@#$%^&*"
+    punctuation += "(){}[]"
+    punctuation += "+=-_"
+    punctuation += "|\\'\":;<>,./?"
+    
+    punctuation = "!()[]{}_@#$%^&*./,?~';\":"
+    document = [c for c in document if c not in punctuation]
+    # then split
+    document.split()
+    return document
 
 def create_index(tokens):
     """
@@ -44,9 +52,17 @@ def create_index(tokens):
     >>> index['b']
     [0]
     """
-    ###TODO
-    pass
-
+    # input:
+    # [['a','b']
+    #  ['c','d']]
+    index = {}
+    for doc_id, token_list in enumerate(tokens):
+        for token in token_list:
+            if token in index:
+                index[token].append(doc_id)
+            else:
+                index[token] = [doc_id]
+    return index
 
 def intersect(list1, list2):
     """ Return the intersection of two posting lists. Use the optimize
