@@ -1,3 +1,4 @@
+#!/usr/bin/python3
 """ Assignment 0
 
 You will implement a simple in-memory boolean search engine over the jokes
@@ -22,16 +23,11 @@ def tokenize(document):
     ['hi', 'there', 'what', 's', 'going', 'on']
     """
     # drop punctuation
-    punctuation  = "~`!@#$%^&*"
-    punctuation += "(){}[]"
-    punctuation += "+=-_"
-    punctuation += "|\\'\":;<>,./?"
-    
-    punctuation = "!()[]{}_@#$%^&*./,?~';\":"
-    document = [c for c in document if c not in punctuation]
+    return re.findall('\w+', document.lower())
+    #return re.split('\W+', document.lower())
+    #document = re.sub(r'[\W\S]', '', document)  # replace not-word, not-space with ''
     # then split
-    document.split()
-    return document
+    #return document.split()
 
 def create_index(tokens):
     """
@@ -101,7 +97,7 @@ def sort_by_num_postings(words, index):
     # makes a set of (word, doc_count)
     word_counts = [(word, len(index[word])) for word in words]
     # sort by the second element
-    word_counts = (word_counts, key = lambda x: int(x[1]))
+    word_counts = sorted(word_counts, key = lambda x: int(x[1]))
     # return the list, but only the first element of each set (the tokens)
     return [word for word, _ in word_counts]
 
