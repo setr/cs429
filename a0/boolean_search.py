@@ -75,8 +75,23 @@ def intersect(list1, list2):
     >>> intersect([1, 2], [3, 4])
     []
     """
-    ###TODO
-    pass
+    answer = []
+    x = 0
+    y = 0
+    max1 = len(list1)
+    max2 = len(list2)
+    while x < max1 and y < max2:
+        docid1 = list1[x]
+        docid2 = list2[y]
+        if docid1 == docid2:
+            answer.append(docid1)
+            x += 1
+            y += 1
+        elif docid1 < docid2:
+            x += 1
+        else:
+            y += 1
+    return answer
 
 
 def sort_by_num_postings(words, index):
@@ -120,9 +135,22 @@ def search(index, query):
     >>> search({'a': [0, 1], 'b': [1, 2, 3], 'c': [4]}, 'a b')
     [1]
     """
-    ###TODO
-    pass
-
+    tokens = tokenize(query)
+    sort = sort_by_num_postings(tokens, index)
+    # [1,2,3,4]
+    # a = intersection of 1 and 2
+    # b = intersection of a and 3
+    # c = intersection of b and 4
+    token_count = len(sort)
+    if token_count == 0:
+        cur_intersection = []
+    elif token_count == 1:
+        cur_intersection = index[sort[0]]
+    else:
+        cur_intersection = intersect(index[sort[0]], index[sort[1]]) 
+        for i in sort[2:]:
+            cur_intersection = intersect(cur_intersection, index[i]) 
+    return cur_intersection
 
 def main():
     """ Main method. You should not modify this. """
