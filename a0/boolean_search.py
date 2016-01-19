@@ -98,9 +98,12 @@ def sort_by_num_postings(words, index):
     >>> sort_by_num_postings(['a', 'b', 'c'], {'a': [0, 1], 'b': [1, 2, 3], 'c': [4]})
     ['c', 'a', 'b']
     """
-    ###TODO
-    pass
-
+    # makes a set of (word, doc_count)
+    word_counts = [(word, len(index[word])) for word in words]
+    # sort by the second element
+    word_counts = (word_counts, key = lambda x: int(x[1]))
+    # return the list, but only the first element of each set (the tokens)
+    return [word for word, _ in word_counts]
 
 def search(index, query):
     """ Return the document ids for documents matching the query. Assume that
