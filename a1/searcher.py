@@ -157,10 +157,7 @@ class Index(object):
         """
         # has a list of terms
         # term : idf
-        query_index = {}
-        for term in query_terms:
-            query_index[term] = math.log10(len(self.index) / self.index[term])
-        return query_index
+        return {term : math.log10(len(self.index) / self.index[term]) for term in query_terms}
 
     def search_by_cosine(self, query_vector, index, doc_lengths):
         """
@@ -183,8 +180,15 @@ class Index(object):
         >>> Index().search_by_cosine({'a': 1}, {'a': [[0, 1], [1, 2]]}, {0: 1, 1: 1})
         [(1, 2.0), (0, 1.0)]
         """
-        ###TODO
-        pass
+        scores = defaultdict(lambda: 0)
+        for q_term, q_weight in query_vector.iteritems():
+            for doc_id, doc_weight in index[q_term]:
+                scores[doc_id] += q_weight * doc_weight
+
+        for doc_id in scores:
+            scores[doc_id] /= doc_lengths[doc_id] * 1.0
+
+        return sorted(scores.items(), key = lambda x: x[1], reverse=True)
 
     def search(self, query, use_champions=False):
         """ Return the document ids for documents matching the query. Assume that
@@ -200,12 +204,16 @@ class Index(object):
         query...........raw query string, possibly containing multiple terms (though boolean operators do not need to be supported)
         use_champions...If True, Step 4 above will use only the champion index to perform the search.
         """
-        tokenized = self.tokenize(query) # returns as a list
-        vectorized = self.query_to_vector(tokenized)
-        computized = self.search_by_cosine(vectorized)
+        the_index = self.index
+        if use_champions:
+            the_index = self.champion_index
 
-        ###TODO
-        pass
+        tokenized = self.tokenize(query) # returns as a list
+        vectorized = self.query_to_vector(tokenized) # returns query-term:weight
+        doc_lens = self.compute_doc_lengths(the_index)
+        computized = self.search_by_cosine(vectorized, the_index, doc_lens) # returns doc_id : score, sorted
+        return [doc[0] for doc in computized]
+
 
     def read_lines(self, filename):
         """ DO NOT MODIFY.
