@@ -55,14 +55,10 @@ class Index(object):
             for doc in doc_list:
                 lengths[doc[0]].append(doc[1])
 
-        lengths = {doc_id: math.sqrt(sum(map(lambda x: x**2, weights))) for doc_id, weights in lengths.iteritems()}
-        return lengths
-
         #for doc_id, weights in lengths.iteritems:
         #    lengths[doc_id] = math.sqrt(sum(map(lambda x: x**2, weights)))
-
-        ###TODO
-        pass
+        lengths = {doc_id: math.sqrt(sum(map(lambda x: x**2, weights))) for doc_id, weights in lengths.iteritems()}
+        return lengths
 
     def create_champion_index(self, index, threshold=10):
         """
@@ -78,6 +74,13 @@ class Index(object):
         >>> champs['a']
         [[1, 20], [2, 15]]
         """
+        # term : list of best docs
+        champs = {}
+        for token, doc_list in index.iteritems():
+            doc_list = sorted(doc_list, key=lambda x: x[1], reverse=True)
+            champ_list = doc_list if len(doc_list) <= threshold else doc_list[:threshold]
+            champs[token] = champ_list
+        return champs
         ###TODO
         pass
 
