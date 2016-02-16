@@ -136,8 +136,11 @@ class Index(object):
         >>> res['c']
         1
         """
-        ###TODO
-        pass
+        doc_freq = defaultdict(lambda:0)
+        for token_list in docs:
+            for token in set(token_list):
+                doc_freq[token] += 1
+        return doc_freq
 
     def query_to_vector(self, query_terms):
         """ Convert a list of query terms into a dict mapping term to inverse document frequency (IDF).
