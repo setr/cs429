@@ -51,13 +51,13 @@ class Index(object):
         # index -- token : array of docs, as tuples (term, weight)
         # lengths -- doc_id: array of tf-idf weights 
         lengths = defaultdict(list)
-        for token, doc_list in index.iteritems():
+        for token, doc_list in index.items():
             for doc in doc_list:
                 lengths[doc[0]].append(doc[1])
 
-        #for doc_id, weights in lengths.iteritems:
+        #for doc_id, weights in lengths.items:
         #    lengths[doc_id] = math.sqrt(sum(map(lambda x: x**2, weights)))
-        lengths = {doc_id: math.sqrt(sum(map(lambda x: x**2, weights))) for doc_id, weights in lengths.iteritems()}
+        lengths = {doc_id: math.sqrt(sum(map(lambda x: x**2, weights))) for doc_id, weights in lengths.items()}
         return lengths
 
     def create_champion_index(self, index, threshold=10):
@@ -76,7 +76,7 @@ class Index(object):
         """
         # term : list of best docs
         champs = {}
-        for token, doc_list in index.iteritems():
+        for token, doc_list in index.items():
             doc_list = sorted(doc_list, key=lambda x: x[1], reverse=True)
             champ_list = doc_list if len(doc_list) <= threshold else doc_list[:threshold]
             champs[token] = champ_list
@@ -121,7 +121,7 @@ class Index(object):
                 #weight = 1 + log(term-freq-in-doc) * log(number-of-docs / term-freq-in-all-docs)
                 count = token_list.count(token)
                 tf = 1 + math.log10(count) if count > 0 else 0
-                idf = math.log10(len(docs) / doc_freqs[token])
+                idf = math.log10(len(docs) / (doc_freqs[token] if doc_freqs[token] else 1))
                 weight = tf * idf
                 index[token].append([doc_id, weight])
         return index
@@ -157,7 +157,7 @@ class Index(object):
         """
         # has a list of terms
         # term : idf
-        return {term : math.log10(len(self.index) / self.index[term]) for term in query_terms}
+        return {term : math.log10(len(self.doc_freqs) / (self.doc_freqs[term] if self.doc_freqs[term] else 1)) for term in query_terms}
 
     def search_by_cosine(self, query_vector, index, doc_lengths):
         """
@@ -181,9 +181,10 @@ class Index(object):
         [(1, 2.0), (0, 1.0)]
         """
         scores = defaultdict(lambda: 0)
-        for q_term, q_weight in query_vector.iteritems():
-            for doc_id, doc_weight in index[q_term]:
-                scores[doc_id] += q_weight * doc_weight
+        for q_term, q_weight in query_vector.items():
+            if q_term in index:
+                for doc_id, doc_weight in index[q_term]:
+                    scores[doc_id] += q_weight * doc_weight
 
         for doc_id in scores:
             scores[doc_id] /= doc_lengths[doc_id] * 1.0
@@ -212,7 +213,7 @@ class Index(object):
         vectorized = self.query_to_vector(tokenized) # returns query-term:weight
         doc_lens = self.compute_doc_lengths(the_index)
         computized = self.search_by_cosine(vectorized, the_index, doc_lens) # returns doc_id : score, sorted
-        return [doc[0] for doc in computized]
+        return computized
 
 
     def read_lines(self, filename):
