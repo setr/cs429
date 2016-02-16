@@ -81,8 +81,6 @@ class Index(object):
             champ_list = doc_list if len(doc_list) <= threshold else doc_list[:threshold]
             champs[token] = champ_list
         return champs
-        ###TODO
-        pass
 
     def create_tfidf_index(self, docs, doc_freqs):
         """
@@ -110,6 +108,24 @@ class Index(object):
         >>> index['b']  # doctest:+ELLIPSIS
         [[0, 0.301...]]
         """
+        # [['a','b','a'], # lists of tokens for a document
+        #         ['a']]
+        # {'a': 2., # doc frequencies
+        #  'b': 1.,
+        #  'c': 1.}
+
+        index = defaultdict(list)
+        for doc_id, token_list in enumerate(docs):
+            for token in token_list:
+                #weight = term-freq * inverse-doc-freq
+                #weight = 1 + log(term-freq-in-doc) * log(number-of-docs / term-freq-in-all-docs)
+                count = token_list.count(token)
+                tf = 1 + math.log10(count) if count > 0 else 0
+                idf = log(len(docs) / doc_freqs[token])
+                weight = tf * idf
+                index[token].append([doc_id, weight])
+        return index
+            
         ###TODO
         pass
 
