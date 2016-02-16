@@ -155,8 +155,12 @@ class Index(object):
         Returns:
           A dict from query term to IDF.
         """
-        ###TODO
-        pass
+        # has a list of terms
+        # term : idf
+        query_index = {}
+        for term in query_terms:
+            query_index[term] = math.log10(len(self.index) / self.index[term])
+        return query_index
 
     def search_by_cosine(self, query_vector, index, doc_lengths):
         """
