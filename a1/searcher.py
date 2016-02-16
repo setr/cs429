@@ -48,7 +48,19 @@ class Index(object):
         >>> lengths[0]
         5.0
         """
-        # dict: array of tuples (term, weight)
+        # index -- token : array of docs, as tuples (term, weight)
+        # lengths -- doc_id: array of tf-idf weights 
+        lengths = defaultdict(list)
+        for token, doc_list in index.iteritems():
+            for doc in doc_list:
+                lengths[doc[0]].append(doc[1])
+
+        lengths = {doc_id: math.sqrt(sum(map(lambda x: x**2, weights))) for doc_id, weights in lengths.iteritems()}
+        return lengths
+
+        #for doc_id, weights in lengths.iteritems:
+        #    lengths[doc_id] = math.sqrt(sum(map(lambda x: x**2, weights)))
+
         ###TODO
         pass
 
@@ -165,6 +177,10 @@ class Index(object):
         query...........raw query string, possibly containing multiple terms (though boolean operators do not need to be supported)
         use_champions...If True, Step 4 above will use only the champion index to perform the search.
         """
+        tokenized = self.tokenize(query) # returns as a list
+        vectorized = self.query_to_vector(tokenized)
+        computized = self.search_by_cosine(vectorized)
+
         ###TODO
         pass
 
