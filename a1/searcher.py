@@ -48,6 +48,7 @@ class Index(object):
         >>> lengths[0]
         5.0
         """
+        # dict: array of tuples (term, weight)
         ###TODO
         pass
 
@@ -171,7 +172,7 @@ class Index(object):
         """ DO NOT MODIFY.
         Read a gzipped file to a list of strings.
         """
-        return [l.strip() for l in gzip.open(filename, 'rt').readlines()]
+        return [l.strip() for l in gzip.open(filename, 'rt', encoding='utf8').readlines()]
 
     def tokenize(self, document):
         """ DO NOT MODIFY.
