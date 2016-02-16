@@ -116,18 +116,15 @@ class Index(object):
 
         index = defaultdict(list)
         for doc_id, token_list in enumerate(docs):
-            for token in token_list:
+            for token in set(token_list):
                 #weight = term-freq * inverse-doc-freq
                 #weight = 1 + log(term-freq-in-doc) * log(number-of-docs / term-freq-in-all-docs)
                 count = token_list.count(token)
                 tf = 1 + math.log10(count) if count > 0 else 0
-                idf = log(len(docs) / doc_freqs[token])
+                idf = math.log10(len(docs) / doc_freqs[token])
                 weight = tf * idf
                 index[token].append([doc_id, weight])
         return index
-            
-        ###TODO
-        pass
 
     def count_doc_frequencies(self, docs):
         """ Return a dict mapping terms to document frequency.
