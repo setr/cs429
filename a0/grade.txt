@@ -1,0 +1,53 @@
+Grade: 43.00/50.00
+
+2 Deduction(s):
+
+--------------
+#1: 4.00 points
+Failing test: test_create_index2:  @points=4 
+Traceback (most recent call last):
+  File "assignments-sol/a0/a0_test.py", line 36, in test_create_index2
+    self.assertListEqual(list(create_index([['a', 'b'], ['a', 'c', 'a']])['a']), [0, 1])
+AssertionError: Lists differ: [0, 1, 1] != [0, 1]
+
+First list contains 1 additional elements.
+First extra element 2:
+1
+
+- [0, 1, 1]
+?     ---
+
++ [0, 1]
+
+source:
+    def test_create_index2(self):
+         """ @points=4 """
+         self.assertCountEqual(create_index([['a', 'b'], ['a', 'c', 'a']]).keys(), ['a', 'c', 'b'])
+         self.assertListEqual(list(create_index([['a', 'b'], ['a', 'c', 'a']])['a']), [0, 1])
+         self.assertListEqual(list(create_index([['a', 'b'], ['a', 'c']])['b']), [0])
+         self.assertListEqual(list(create_index([['a', 'b'], ['a', 'c']])['c']), [1])
+--------------
+
+--------------
+#2: 3.00 points
+Failing test: test_search_unk:  @points=3
+        Test case where query term is not in index. 
+Traceback (most recent call last):
+  File "assignments-sol/a0/a0_test.py", line 82, in test_search_unk
+    self.assertListEqual(list(search({'a': [0, 1, 2, 10], 'b': [1, 2, 3], 'c': [0, 1, 2, 4]}, 'a zebra')),
+  File "students/setr/a0/boolean_search.py", line 143, in search
+    sort = sort_by_num_postings(tokens, index)
+  File "students/setr/a0/boolean_search.py", line 117, in sort_by_num_postings
+    word_counts = [(word, len(index[word])) for word in words]
+  File "students/setr/a0/boolean_search.py", line 117, in <listcomp>
+    word_counts = [(word, len(index[word])) for word in words]
+KeyError: 'zebra'
+
+source:
+    def test_search_unk(self):
+         """ @points=3
+         Test case where query term is not in index. """
+         self.assertListEqual(list(search({'a': [0, 1, 2, 10], 'b': [1, 2, 3], 'c': [0, 1, 2, 4]}, 'a zebra')),
+                              [])
+--------------
+
