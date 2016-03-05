@@ -36,8 +36,7 @@ class Precision(EvaluatorFunction):
         0.5
         """
         # % of hits that were relevant
-        successes = sum(map(lambda x: 1 if x in relevant else 0, hits))
-        return successes * 1.0 / len(hits)
+        return len(set(hits) & set(relevant))  * 1.0 / len(hits)
 
     def __repr__(self):
         return 'Precision'
@@ -53,8 +52,7 @@ class Recall(EvaluatorFunction):
         0.5
         """
         # % of relevant found
-        successes = sum(map(lambda x: 1 if x in hits else 0, relevant))
-        return successes * 1.0 / len(relevant)
+        return len(set(hits) & set(relevant))  * 1.0 / len(relevant)
 
     def __repr__(self):
         return 'Recall'
@@ -70,8 +68,8 @@ class F1(EvaluatorFunction):
         """
         # weights precision and recall equally
         # (2 * precision * recall) / (precision + recall)
-        precision = sum(map(lambda x: 1 if x in relevant else 0, hits)) * 1.0 / len(hits)
-        recall = sum(map(lambda x: 1 if x in hits else 0, relevant)) * 1.0 / len(relevant)
+        precision = len(set(hits) & set(relevant))  * 1.0 / len(hits)
+        recall = len(set(hits) & set(relevant))  * 1.0 / len(relevant)
         numer = 2 * precision * recall
         denom = precision + recall
         return numer / denom
@@ -88,8 +86,19 @@ class MAP(EvaluatorFunction):
         >>> MAP().evaluate([1, 2, 3, 4, 5, 6, 7, 8, 9, 10], [1, 4, 6, 11, 12, 13, 14, 15, 16, 17])
         0.2
         """
-        ###TODO
-        pass
+
+        relevant_indexes = []
+        for index, x in enumerate(hits):
+            if x in relevant:
+                relevant_indexes.append(index)
+
+        t = 0
+        for i in relevant_indexes:
+            i = i+1
+            precision = len(set(hits[:i]) & set(relevant))  * 1.0 / i
+            # precision = sum(map(lambda x: 1 if x in relevant else 0, hits[:i])) * 1.0 / i
+            t += precision
+        return t / len(relevant)
 
     def __repr__(self):
         return 'MAP'
