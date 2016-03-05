@@ -35,6 +35,11 @@ class Precision(EvaluatorFunction):
         >>> Precision().evaluate([1, 2, 3, 4], [2, 4])
         0.5
         """
+        success = 0
+        for i in hits:
+            if i in relevant:
+                success += 1
+        return success * 1.0 / len(hits)
         ###TODO
         pass
 

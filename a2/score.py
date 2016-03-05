@@ -66,9 +66,10 @@ class RSV(ScoringFunction):
 
         scores = defaultdict(lambda: 0)
         for q_term, q_weight in query_vector.items():
-            for doc_id, doc_tf in index.index[q_term]:
-                weight = ((q_weight + 1) * doc_tf) / (q_weight + doc_tf)
-                scores[doc_id] += (idf(q_term, index)  * weight)
+            if q_term in index.index:
+                for doc_id, doc_tf in index.index[q_term]:
+                    weight = ((q_weight + 1) * doc_tf) / (q_weight + doc_tf)
+                    scores[doc_id] += (idf(q_term, index)  * weight)
         return scores
 
     def __repr__(self):
@@ -97,14 +98,14 @@ class BM25(ScoringFunction):
     def score(self, query_vector, index):
         scores = defaultdict(lambda:0)
         for q_term, q_weight in query_vector.items():
-            for doc_id, doc_tf in index.index[q_term]:
-                b = self.b
-                k = self.k
-                B = (1 - b) + (b * (index.doc_lengths[doc_id] / index.mean_doc_length))
-                weight = ((k + 1) * doc_tf) / ((B * k) + doc_tf)
-                scores[doc_id] += (idf(q_term, index) * weight)
+            if q_term in index.index:
+                for doc_id, doc_tf in index.index[q_term]:
+                    b = self.b
+                    k = self.k
+                    B = (1 - b) + (b * (index.doc_lengths[doc_id] / index.mean_doc_length))
+                    weight = ((k + 1) * doc_tf) / ((B * k) + doc_tf)
+                    scores[doc_id] += (idf(q_term, index) * weight)
         return scores
-                
 
     def __repr__(self):
         return 'BM25 k=%d b=%.2f' % (self.k, self.b)
