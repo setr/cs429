@@ -36,12 +36,11 @@ class Precision(EvaluatorFunction):
         0.5
         """
         success = 0
+        successes = sum(map(lambda x: 1 if x in relevant else 0, hits))
         for i in hits:
             if i in relevant:
                 success += 1
-        return success * 1.0 / len(hits)
-        ###TODO
-        pass
+        return successes * 1.0 / len(hits)
 
     def __repr__(self):
         return 'Precision'
