@@ -21,8 +21,13 @@ def parse_relevance_strings(strings):
     >>> sorted(result.items())
     [(1, [268, 288, 304]), (2, [326, 334])]
     """
-    ###TODO
-    pass
+    work = dict()
+    for line in strings:
+        line = line.split()
+        q_id = line[0]
+        doc_ids = line[1:]
+        work[q_id] = doc_ids
+    return work
 
 
 def read_relevances(fname):
@@ -89,8 +94,11 @@ def parse_document_strings(strings):
     >>> parse_document_strings(string.split('\n'))
     ['THE ALLIES AFTER NASSAU', 'THE ROAD TO JAIL IS PAVED WITH']
     """
-    ###TODO
-    pass
+    doc = list()
+    for line in strings:
+        if line and "*TEXT" not in line and "*STOP" not in line:
+            doc.append(line)
+    return doc
 
 
 def read_documents(fname):
