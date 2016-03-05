@@ -117,8 +117,11 @@ class Index(object):
         >>> res['c']
         1.0
         """
-        ###TODO
-        pass
+        doc_freq = defaultdict(lambda: 0)
+        for doc in docs:
+            for token in set(doc):
+                doc_freq[token] += 1.0
+        return doc_freq
 
     def query_to_vector(self, query_terms):
         """ Convert a list of query terms into a dict mapping each term to its
@@ -148,8 +151,13 @@ class Index(object):
         >>> res['b'] # doctest:+ELLIPSIS
         0.176...
         """
-        ###TODO
-        pass
+        doc_freq = self.doc_freqs
+        doc_N = len(self.docs)
+        vectorlist = dict()
+        for term in query_terms:
+            idf = doc_N / (math.log10((doc_freq[term] if doc_freq[term] else 1)))
+            vectorlist[term] = idf
+        return vectorlist
 
     def tokenize(self, document):
         """ DO NOT MODIFY.
