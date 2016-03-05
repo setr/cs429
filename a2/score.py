@@ -27,9 +27,7 @@ def idf(term, index):
     >>> idf('e', idx) # doctest:+ELLIPSIS
     0.176...
     """
-    ###TODO
-    pass
-
+    return math.log10( len(index.documents) / index.doc_freqs[term] )
 
 class ScoringFunction:
     """ An Abstract Base Class for ranking documents by relevance to a
@@ -60,6 +58,8 @@ class RSV(ScoringFunction):
     >>> rsv.score({'a': 1.}, idx)[1]  # doctest:+ELLIPSIS
     0.4771...
     """
+    #sum of the log of inverse document frequency for each matching query term
+
 
     def score(self, query_vector, index):
         ###TODO
