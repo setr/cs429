@@ -71,8 +71,18 @@ class Index(object):
         >>> mean
         6.0
         """
-        ###TODO
-        pass
+        doc_lens = defaultdict(lambda: 0.0)
+        total_len = 0.0
+        for term, docs in index.items():
+            for doc in docs:
+                doc_id = doc[0]
+                term_count = doc[1]
+                doc_lens[doc_id] += term_count
+                total_len += term_count
+
+        mean_len = total_len / len(doc_lens)
+
+        return doc_lens, mean_len
 
     def create_tf_index(self, docs, doc_freqs):
         """
