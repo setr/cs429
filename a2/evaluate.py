@@ -68,8 +68,13 @@ class F1(EvaluatorFunction):
         >>> F1().evaluate([1, 2, 3, 4], [2, 5])  # doctest:+ELLIPSIS
         0.333...
         """
-        ###TODO
-        pass
+        # weights precision and recall equally
+        # (2 * precision * recall) / (precision + recall)
+        precision = sum(map(lambda x: 1 if x in relevant else 0, hits)) * 1.0 / len(hits)
+        recall = sum(map(lambda x: 1 if x in hits else 0, relevant)) * 1.0 / len(relevant)
+        numer = 2 * precision * recall
+        denom = precision + recall
+        return numer / denom
 
     def __repr__(self):
         return 'F1'
