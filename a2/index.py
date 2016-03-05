@@ -53,6 +53,7 @@ class Index(object):
         """
         work = defaultdict(lambda: 0.0)
         
+        # sum the tf-idf values for each term, by doc
         for term, doc_list in index.items():
             for doc_set in doc_list:
                 doc_id = doc_set[0]
@@ -63,7 +64,7 @@ class Index(object):
                 # note: we haven't sqrt'd yet
                 work[doc_id] += tfidf_t 
                 
-        # sqrt the total to get the correct tfidf vales
+        # sqrt the total tf-idfs to get the doc's tf-idf val
         for doc in work.keys():
             work[doc] = math.sqrt(work[doc])
         return work
@@ -131,8 +132,6 @@ class Index(object):
             doc_id += 1
         return work
 
-        
-
     def count_doc_frequencies(self, docs):
         """
         Params:
@@ -188,7 +187,6 @@ class Index(object):
         vectorlist = dict()
         for term in query_terms:
             idf = math.log10(doc_N / (doc_freq[term] if doc_freq[term] else 1))
-            #idf = doc_N / (math.log10((doc_freq[term] if doc_freq[term] else 1)))
             vectorlist[term] = idf
         return vectorlist
 
