@@ -58,37 +58,18 @@ class RSV(ScoringFunction):
     >>> rsv.score({'a': 1.}, idx)[1]  # doctest:+ELLIPSIS
     0.4771...
     """
-    #sum of the log of inverse document frequency for each matching query term
+    # sum of the log of inverse document frequency for each matching query term
     # * weight
     # weight = ((k + 1) * term-freq) / (k + term-freq)
 
     def score(self, query_vector, index):
-        # get a list of query terms, and their idf vals?
-        # doc_id = index
-        # idf val = value
-        # get the documents with more than 1?
 
-        # make a dictionary of RSV(d)
-        # doc : RSV(val)
-        # take a doc
-        # get its query val
-        # 
-
-
-        doclist = list()
-
-        for term, k in query_vector.items():
-            idf_val = math.log10(idf(term, index))
-            for i, doc in enumerate(index.documents):
-                tf = doc.count(term)
-                weight = ((k + 1) * tf) / (k + tf)
-                RSV = idf_val*weight
-                if len(doclist[i]):
-                    doclist[i] += RSV
-                else:
-                    doclist[i] = RSV
-        return doclist
-
+        scores = defaultdict(lambda: 0)
+        for q_term, q_weight in query_vector.items():
+            for doc_id, doc_tf in index.index[q_term]:
+                weight = ((q_weight + 1) * doc_tf) / (q_weight + doc_tf)
+                scores[doc_id] += (idf(q_term, index)  * weight)
+        return scores
 
     def __repr__(self):
         return 'RSV'
@@ -108,9 +89,22 @@ class BM25(ScoringFunction):
         self.k = k
         self.b = b
 
+    # B = (1 - b) + (b * (index.doc_lengths[doc_id] / index.mean_doc_length))
+    # b = self.b
+    # BM25 = sum of the log of the inverse document frequency for each matching query term
+    # * weight
+    # weight = ((k + 1) * term-freq) / ((B * k) + term-freq)
     def score(self, query_vector, index):
-        ###TODO
-        pass
+        scores = defaultdict(lambda:0)
+        for q_term, q_weight in query_vector.items():
+            for doc_id, doc_tf in index.index[q_term]:
+                b = self.b
+                k = self.k
+                B = (1 - b) + (b * (index.doc_lengths[doc_id] / index.mean_doc_length))
+                weight = ((k + 1) * doc_tf) / ((B * k) + doc_tf)
+                scores[doc_id] += (idf(q_term, index) * weight)
+        return scores
+                
 
     def __repr__(self):
         return 'BM25 k=%d b=%.2f' % (self.k, self.b)
@@ -133,14 +127,23 @@ class Cosine(ScoringFunction):
 
     # doc1 = query
     # doc2 = target-doc
+
+    # The first document is ['a a b c']. So, the term a has tf=2 and df=1; thus,
+    # its tf-idf value is (1 + log10(2)) * log(3/1) = .6207.... We multiply this
+    # by the provided query weight for this term (1). Thus, the numerator in the
+    # cosine similarity is .6207.... The denominator is the precomputed doc norm
+    # for document 1 (0.782927). Then, the final value is .6207... / .782927 =
+    # 0.792857. Recall that we don't need to divide by the query norm, since this
+    # will not affect the final ranking.         
+
     def score(self, query_vector, index):
         scores = defaultdict(lambda: 0)
 
-       #The first document is ['a a b c']. So, the term a has tf=2 and df=1; thus, its tf-idf value is (1 + log10(2)) * log(3/1) = .6207.... We multiply this by the provided query weight for this term (1). Thus, the numerator in the cosine similarity is .6207.... The denominator is the precomputed doc norm for document 1 (0.782927). Then, the final value is .6207... / .782927 = 0.792857. Recall that we don't need to divide by the query norm, since this will not affect the final ranking.         
         for q_term, q_weight in query_vector.items():
-            for doc_id, doc_tf in index.index[q_term]:
-                tf_idf = (1.0 + math.log10(doc_tf)) * idf(q_term, index) * q_weight
-                scores[doc_id] += tf_idf
+            if q_term in index.index:
+                for doc_id, doc_tf in index.index[q_term]:
+                    tf_idf = (1.0 + math.log10(doc_tf)) * idf(q_term, index) * q_weight
+                    scores[doc_id] += tf_idf
 
         for doc_id in scores:
             scores[doc_id] /= index.doc_norms[doc_id]
