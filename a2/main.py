@@ -23,10 +23,12 @@ def parse_relevance_strings(strings):
     """
     work = dict()
     for line in strings:
-        line = line.split()
-        q_id = line[0]
-        doc_ids = line[1:]
-        work[q_id] = doc_ids
+        if line:
+            line = line.split()
+            line = map(int, line)
+            q_id = line[0]
+            doc_ids = line[1:]
+            work[q_id] = doc_ids
     return work
 
 
