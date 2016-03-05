@@ -1,0 +1,30 @@
+Grade: 46.00/50.00
+
+1 Deduction(s):
+
+--------------
+#1: 4.00 points
+Failing test: test_create_index2:  @points=4 
+Traceback (most recent call last):
+  File "assignments-sol/a0/a0_test.py", line 36, in test_create_index2
+    self.assertListEqual(list(create_index([['a', 'b'], ['a', 'c', 'a']])['a']), [0, 1])
+AssertionError: Lists differ: [0, 1, 1] != [0, 1]
+
+First list contains 1 additional elements.
+First extra element 2:
+1
+
+- [0, 1, 1]
+?     ---
+
++ [0, 1]
+
+source:
+    def test_create_index2(self):
+         """ @points=4 """
+         self.assertCountEqual(create_index([['a', 'b'], ['a', 'c', 'a']]).keys(), ['a', 'c', 'b'])
+         self.assertListEqual(list(create_index([['a', 'b'], ['a', 'c', 'a']])['a']), [0, 1])
+         self.assertListEqual(list(create_index([['a', 'b'], ['a', 'c']])['b']), [0])
+         self.assertListEqual(list(create_index([['a', 'b'], ['a', 'c']])['c']), [1])
+--------------
+
