@@ -35,11 +35,8 @@ class Precision(EvaluatorFunction):
         >>> Precision().evaluate([1, 2, 3, 4], [2, 4])
         0.5
         """
-        success = 0
+        # % of hits that were relevant
         successes = sum(map(lambda x: 1 if x in relevant else 0, hits))
-        for i in hits:
-            if i in relevant:
-                success += 1
         return successes * 1.0 / len(hits)
 
     def __repr__(self):
@@ -55,8 +52,9 @@ class Recall(EvaluatorFunction):
         >>> Recall().evaluate([1, 2, 3, 4], [2, 5])
         0.5
         """
-        ###TODO
-        pass
+        # % of relevant found
+        successes = sum(map(lambda x: 1 if x in hits else 0, relevant))
+        return successes * 1.0 / len(relevant)
 
     def __repr__(self):
         return 'Recall'
