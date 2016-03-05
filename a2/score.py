@@ -74,6 +74,7 @@ class RSV(ScoringFunction):
         # get its query val
         # 
 
+
         doclist = list()
 
         for term, k in query_vector.items():
@@ -138,11 +139,8 @@ class Cosine(ScoringFunction):
        #The first document is ['a a b c']. So, the term a has tf=2 and df=1; thus, its tf-idf value is (1 + log10(2)) * log(3/1) = .6207.... We multiply this by the provided query weight for this term (1). Thus, the numerator in the cosine similarity is .6207.... The denominator is the precomputed doc norm for document 1 (0.782927). Then, the final value is .6207... / .782927 = 0.792857. Recall that we don't need to divide by the query norm, since this will not affect the final ranking.         
         for q_term, q_weight in query_vector.items():
             for doc_id, doc_tf in index.index[q_term]:
-                tf = doc_tf 
-                df = index.doc_freqs[q_term]
-                tf_idf = (1.0 + math.log10(doc_tf)) * math.log10(len(index.documents) / df)
-                numerator = tf_idf * q_weight
-                scores[doc_id] += numerator
+                tf_idf = (1.0 + math.log10(doc_tf)) * idf(q_term, index) * q_weight
+                scores[doc_id] += tf_idf
 
         for doc_id in scores:
             scores[doc_id] /= index.doc_norms[doc_id]
