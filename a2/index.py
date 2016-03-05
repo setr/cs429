@@ -98,8 +98,16 @@ class Index(object):
         >>> index['a']
         [[1, 2.0], [2, 1.0]]
         """
-        ###TODO
-        pass
+        work = defaultdict(list)
+        doc_id = 1
+        for doc in docs:
+            for term in set(doc):
+                term_count = doc.count(term) * 1.0
+                work[term].append([doc_id, term_count])
+            doc_id += 1
+        return work
+
+        
 
     def count_doc_frequencies(self, docs):
         """
