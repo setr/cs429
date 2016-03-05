@@ -23,7 +23,7 @@ def parse_relevance_strings(strings):
     """
     work = dict()
     for line in strings:
-        if line:
+        if line.strip():
             line = line.split()
             line = map(int, line)
             q_id = line[0]
@@ -71,7 +71,7 @@ def parse_query_strings(strings):
     # gets the *FIND lines
     queryid = 0
     for line in strings:
-        if line:
+        if line.strip():
             if "*FIND" in line:
                 queryid = int(line.split()[1])
             elif "*STOP" not in line:
@@ -108,9 +108,15 @@ def parse_document_strings(strings):
     ['THE ALLIES AFTER NASSAU', 'THE ROAD TO JAIL IS PAVED WITH']
     """
     doc = list()
+    document = ""
     for line in strings:
-        if line and "*TEXT" not in line and "*STOP" not in line:
-            doc.append(line)
+        if line.strip():
+            if "*TEXT" in line:
+                #move to next doc
+                doc.append(document)
+                document = ""
+            elif "*STOP" not in line:
+                document += line
     return doc
 
 
@@ -164,8 +170,11 @@ def search(query, scorer, index):
     Returns:
       A list of document ids in descending order of relevance to the query.
     """
-    ###TODO
-    pass
+    query_tokened = index.tokenize(query)
+    query_vector = index.query_to_vector(query_tokened)
+    score = scorer.score(query_vector, index)
+    sortedlist = sorted(score.items(), key = lambda x: round(x[1],5), reverse=True)
+    return [i[0] -1 for i in sortedlist]
 
 
 def run_all(queries, relevances, docs, indexer, scorers, evaluators, NHITS):

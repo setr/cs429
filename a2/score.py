@@ -27,7 +27,7 @@ def idf(term, index):
     >>> idf('e', idx) # doctest:+ELLIPSIS
     0.176...
     """
-    return math.log10( len(index.documents) / index.doc_freqs[term] )
+    return math.log10( len(index.documents) * 1.0/ index.doc_freqs[term] )
 
 class ScoringFunction:
     """ An Abstract Base Class for ranking documents by relevance to a
@@ -68,7 +68,7 @@ class RSV(ScoringFunction):
         for q_term, q_weight in query_vector.items():
             if q_term in index.index:
                 for doc_id, doc_tf in index.index[q_term]:
-                    weight = ((q_weight + 1) * doc_tf) / (q_weight + doc_tf)
+                    weight = ((q_weight + 1) * doc_tf) * 1.0 / (q_weight + doc_tf)
                     scores[doc_id] += (idf(q_term, index)  * weight)
         return scores
 
@@ -102,8 +102,8 @@ class BM25(ScoringFunction):
                 for doc_id, doc_tf in index.index[q_term]:
                     b = self.b
                     k = self.k
-                    B = (1 - b) + (b * (index.doc_lengths[doc_id] / index.mean_doc_length))
-                    weight = ((k + 1) * doc_tf) / ((B * k) + doc_tf)
+                    B = (1 - b) + (b * (index.doc_lengths[doc_id] * 1.0 / index.mean_doc_length))
+                    weight = ((k + 1) * doc_tf) *1.0 / ((B * k) + doc_tf)
                     scores[doc_id] += (idf(q_term, index) * weight)
         return scores
 

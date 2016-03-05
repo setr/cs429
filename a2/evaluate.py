@@ -70,9 +70,13 @@ class F1(EvaluatorFunction):
         # (2 * precision * recall) / (precision + recall)
         precision = len(set(hits) & set(relevant))  * 1.0 / len(hits)
         recall = len(set(hits) & set(relevant))  * 1.0 / len(relevant)
-        numer = 2 * precision * recall
-        denom = precision + recall
-        return numer / denom
+
+        if precision == 0 and recall == 0:
+            return 0
+        else:
+            numer = 2 * precision * recall
+            denom = precision + recall
+            return numer / denom
 
     def __repr__(self):
         return 'F1'
