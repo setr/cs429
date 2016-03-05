@@ -67,8 +67,19 @@ def parse_query_strings(strings):
     >>> print('%s' % res[2])
     EFFORTS OF AMBASSADOR HENRY CABOT LODGE TO GET VIET NAM'S PRESIDENT DIEM TO CHANGE HIS POLICIES OF POLITICAL REPRESSION .
     """
-    ###TODO
-    pass
+    work = defaultdict(str)
+    # gets the *FIND lines
+    queryid = 0
+    for line in strings:
+        if line:
+            if "*FIND" in line:
+                queryid = int(line.split()[1])
+            elif "*STOP" not in line:
+                work[queryid] += line.strip()
+                if line[-1] != ".":
+                    work[queryid] += " " 
+                    
+    return work
 
 
 def read_queries(fname):
