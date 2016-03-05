@@ -51,8 +51,22 @@ class Index(object):
         >>> norms[0] # doctest:+ELLIPSIS
         0.444...
         """
-        ###TODO
-        pass
+        work = defaultdict(lambda: 0.0)
+        
+        for term, doc_list in index.items():
+            for doc_set in doc_list:
+                doc_id = doc_set[0]
+                term_freq = doc_set[1]
+                # get the tfidf value for that term, add to the doc_id
+                tfidf_t = (1.0 + math.log10(term_freq)) * math.log10( n_docs * 1.0 / doc_freqs[term])
+                tfidf_t = tfidf_t ** 2
+                # note: we haven't sqrt'd yet
+                work[doc_id] += tfidf_t 
+                
+        # sqrt the total to get the correct tfidf vales
+        for doc in work.keys():
+            work[doc] = math.sqrt(work[doc])
+        return work
 
     def compute_doc_lengths(self, index):
         """
