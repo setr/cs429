@@ -184,10 +184,11 @@ class Index(object):
         0.176...
         """
         doc_freq = self.doc_freqs
-        doc_N = len(self.docs)
+        doc_N = len(self.documents )
         vectorlist = dict()
         for term in query_terms:
-            idf = doc_N / (math.log10((doc_freq[term] if doc_freq[term] else 1)))
+            idf = math.log10(doc_N / (doc_freq[term] if doc_freq[term] else 1))
+            #idf = doc_N / (math.log10((doc_freq[term] if doc_freq[term] else 1)))
             vectorlist[term] = idf
         return vectorlist
 
