@@ -1,0 +1,57 @@
+Grade: 38.00/50.00
+
+2 Deduction(s):
+
+--------------
+#1: 7.00 points
+Failing test: test_query_to_vector: 
+        @points=7
+        
+Traceback (most recent call last):
+  File "assignments-sol/a1/a1_test.py", line 71, in test_query_to_vector
+    self.assertAlmostEqual(vec['a'], 2.0, 1)
+AssertionError: -0.5228787452803376 != 2.0 within 1 places
+
+source:
+    def test_query_to_vector(self):
+         """
+         @points=7
+         """
+         idx = Index()
+         idx.doc_freqs = {'a': 10, 'b': 100, 'c': 1000}
+         idx.documents = [1] * 1000
+         vec = idx.query_to_vector(['a', 'b', 'c'])
+         self.assertAlmostEqual(vec['a'], 2.0, 1)
+         self.assertAlmostEqual(vec['b'], 1.0, 1)
+         self.assertAlmostEqual(vec['c'], 0.0, 1)
+--------------
+
+--------------
+#2: 5.00 points
+Failing test: test_query_to_vector_unknown: 
+        @points=5
+        
+Traceback (most recent call last):
+  File "assignments-sol/a1/a1_test.py", line 82, in test_query_to_vector_unknown
+    vec = idx.query_to_vector(['a', 'b', 'c', 'd'])
+  File "students/setr/a1/searcher.py", line 160, in query_to_vector
+    return {term : math.log10(len(self.doc_freqs) / (self.doc_freqs[term] if self.doc_freqs[term] else 1)) for term in query_terms}
+  File "students/setr/a1/searcher.py", line 160, in <dictcomp>
+    return {term : math.log10(len(self.doc_freqs) / (self.doc_freqs[term] if self.doc_freqs[term] else 1)) for term in query_terms}
+KeyError: 'd'
+
+source:
+    def test_query_to_vector_unknown(self):
+         """
+         @points=5
+         """
+         idx = Index()
+         idx.doc_freqs = {'a': 10, 'b': 100, 'c': 1000}
+         idx.documents = [1] * 1000
+         vec = idx.query_to_vector(['a', 'b', 'c', 'd'])
+         self.assertAlmostEqual(vec['a'], 2.0, 1)
+         self.assertAlmostEqual(vec['b'], 1.0, 1)
+         self.assertAlmostEqual(vec['c'], 0.0, 1)
+         self.assertFalse('d' in vec)
+--------------
+
