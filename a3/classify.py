@@ -87,6 +87,14 @@ class NaiveBayes(object):
         >>> nb.get_top_words('spam', 2)
         [(2.25, 'b'), (1.5, 'a')]
         """
+        score = []
+        for term in self.class_terms[label]:
+           prob = self.class_terms[label][term] 
+           not_c = sum([self.class_terms[c][term] for c in self.class_terms if c != label])
+
+           odds = (prob * 1.0) / (not_c * 1.0)
+           score.append((odds, term))
+        return sorted(score, reverse=True, key= lambda x: x[0])[:n]
         ###TODO
         pass
 
