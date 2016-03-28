@@ -45,7 +45,7 @@ class Document(object):
 class NaiveBayes(object):
     def __init__(self):
         self.vocab = set()
-        self.class_terms = dict()
+        self.class_terms = defaultdict(lambda: defaultdict(lambda: 1))
         self.class_prior = dict()
 
 
@@ -90,13 +90,11 @@ class NaiveBayes(object):
         score = []
         for term in self.class_terms[label]:
            prob = self.class_terms[label][term] 
-           not_c = sum([self.class_terms[c][term] for c in self.class_terms if c != label])
+           not_c = sum([(self.class_terms[c][term] if term in self.class_terms[c] else 1) for c in self.class_terms if c != label])
 
            odds = (prob * 1.0) / (not_c * 1.0)
            score.append((odds, term))
         return sorted(score, reverse=True, key= lambda x: x[0])[:n]
-        ###TODO
-        pass
 
     def train(self, documents):
         """
@@ -147,8 +145,17 @@ class NaiveBayes(object):
         Returns:
           A list of label strings corresponding to the predictions for each document.
         """
-        ###TODO
-        pass
+        label_list = list()
+        for doc in documents:
+            doc_vocab = {token for token in doc.tokens}
+            score = dict()
+            for c in self.class_terms:
+                # log(P(c)) * sum([ log10(P(t|c)) ])
+                score[c] = math.log10(self.class_prior[c])
+                score[c] += sum([math.log10(self.class_terms[c][term]) for term in doc_vocab])
+            label, _ = max(score.items(), key=lambda x:x[1])
+            label_list.append(label)
+        return label_list
 
 def evaluate(predictions, documents):
     """ Evaluate the accuracy of a set of predictions.
@@ -163,8 +170,20 @@ def evaluate(predictions, documents):
     Returns:
       Tuple of three floats, defined above.
     """
-    ###TODO
-    pass
+    total = len(documents)
+    correct = 0
+    num_ham = 0
+    num_spam = 0
+    for i in range(len(documents)):
+        p = predictions[i]
+        d = documents[i].label
+        if p == d:
+            correct += 1
+        elif p == "ham":
+            num_ham += 1
+        else:
+            num_spam += 1
+    return (correct, num_ham, num_spam)
 
 def main():
     """ Do not modify. """
