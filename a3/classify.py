@@ -43,6 +43,11 @@ class Document(object):
 
 
 class NaiveBayes(object):
+    def __init__(self):
+        self.vocab = set()
+        self.class_terms = dict()
+        self.class_prior = dict()
+
 
     def get_word_probability(self, label, term):
         """
@@ -62,8 +67,7 @@ class NaiveBayes(object):
         >>> nb.get_word_probability('spam', 'b')
         0.375
         """
-        ###TODO
-        pass
+        return self.class_terms[label][term]
 
     def get_top_words(self, label, n):
         """ Return the top n words for the specified class, using the odds ratio.
@@ -97,8 +101,36 @@ class NaiveBayes(object):
         Returns:
           Nothing.
         """
-        ###TODO
-        pass
+        # Need Vocabulary, dict of class:prior, dict of class: term: prob 
+        # vocab = set
+        # class_prior = {class : prior}
+        # class_terms = {class : {term : probability}}
+
+        class_index = defaultdict(list)
+        for d in documents:
+            class_index[d.label].append(d.tokens)
+            for token in d.tokens:
+                self.vocab.add(token)
+
+        for c in class_index:
+            num_of_class = len(class_index)
+            prior = (len(class_index) * 1.0) / (len(documents) * 1.0)  # freq of class in collection
+
+            total_count = 0 # number of tokens in documents of class c
+            term_counts = dict() # number of tokens of term in documents of class c
+            for t in self.vocab:
+                terms = sum([tl.count(t) for tl in class_index[c]])
+                term_counts[t] = terms
+                total_count += terms + 1.0
+
+            prob = dict()
+            for t in self.vocab:
+                prob[t] = (term_counts[t] + 1.0) / (total_count)
+
+            # now to just add everything to class globals
+            self.class_prior[c] = prior
+            self.class_terms[c] = prob
+
 
     def classify(self, documents):
         """ Return a list of strings, either 'spam' or 'ham', for each document.
