@@ -152,7 +152,7 @@ class NaiveBayes(object):
             for c in self.class_terms:
                 # log(P(c)) * sum([ log10(P(t|c)) ])
                 score[c] = math.log10(self.class_prior[c])
-                score[c] += sum([math.log10(self.class_terms[c][term]) for term in doc_vocab])
+                score[c] += sum([math.log10(self.class_terms[c][term] if term in self.class_terms[c] else 1) for term in doc_vocab])
             label, _ = max(score.items(), key=lambda x:x[1])
             label_list.append(label)
         return label_list
@@ -183,7 +183,7 @@ def evaluate(predictions, documents):
             num_ham += 1
         else:
             num_spam += 1
-    return (correct, num_ham, num_spam)
+    return ((correct/total), num_ham, num_spam)
 
 def main():
     """ Do not modify. """
