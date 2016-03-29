@@ -113,24 +113,27 @@ class NaiveBayes(object):
         # class_terms = {class : {term : probability}}
 
         class_index = defaultdict(list)
+        # { class : [[tokens]] } # list of docs, with docs being a list of tokens.
+        class_termcount = defaultdict(lambda: defaultdict(lambda:1))
+        class_total = defaultdict(lambda: 1)
         for d in documents:
             class_index[d.label].append(d.tokens)
             self.vocab |= set(d.tokens) # |= union
+
+            for token in d.tokens:
+                class_termcount[d.label][token] += 1
+                class_total[d.label] +=1
 
         for c in class_index:
             num_of_class = len(class_index)
             prior = (len(class_index) * 1.0) / (len(documents) * 1.0)  # freq of class in collection
 
-            term_counts = dict() # number of tokens of term in documents of class c
-            total_count = 0 # number of tokens in documents of class c
-            for t in self.vocab:
-                terms = sum([tl.count(t) for tl in class_index[c]])
-                term_counts[t] = terms
-                total_count += terms + 1.0
-
+            # for every term that exists in the collection
+            # term_count = the number of times that term appears in the class's docs
+            # total = running count of term's appearance in the class
             prob = dict()
             for t in self.vocab:
-                prob[t] = (term_counts[t] + 1.0) / (total_count)
+                prob[t] = (class_termcount[c][t]) / (class_total[c]) 
 
             # now to just add everything to class globals
             self.class_prior[c] = prior
