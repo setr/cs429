@@ -1,0 +1,33 @@
+Grade: 47.00/50.00
+
+1 Deduction(s):
+
+--------------
+#1: 3.00 points
+Failing test: test_search: 
+        @points=3
+        
+Traceback (most recent call last):
+  File "assignments-sol/a2/a2_test.py", line 133, in test_search
+    self.assertListEqual(result, [2, 3])
+AssertionError: Lists differ: [1, 2] != [2, 3]
+
+First differing element 0:
+1
+2
+
+- [1, 2]
++ [2, 3]
+
+source:
+    def test_search(self):
+         """
+         @points=3
+         """
+         idx = index.Index(['a a b c', 'c d e', 'c e f'])
+         scorer = Cosine()
+         query = 'e'
+         result = search(query, scorer, idx)
+         self.assertListEqual(result, [2, 3])
+--------------
+
