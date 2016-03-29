@@ -126,7 +126,7 @@ class NaiveBayes(object):
 
         for c in class_index:
             num_of_class = len(class_index)
-            prior = (len(class_index) * 1.0) / (len(documents) * 1.0)  # freq of class in collection
+            prior = (len(class_index[c]) * 1.0) / (len(documents) * 1.0)  # freq of class in collection
 
             # for every term that exists in the collection
             # term_count = the number of times that term appears in the class's docs
