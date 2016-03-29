@@ -115,15 +115,14 @@ class NaiveBayes(object):
         class_index = defaultdict(list)
         for d in documents:
             class_index[d.label].append(d.tokens)
-            for token in d.tokens:
-                self.vocab.add(token)
+            self.vocab |= set(d.tokens) # |= union
 
         for c in class_index:
             num_of_class = len(class_index)
             prior = (len(class_index) * 1.0) / (len(documents) * 1.0)  # freq of class in collection
 
-            total_count = 0 # number of tokens in documents of class c
             term_counts = dict() # number of tokens of term in documents of class c
+            total_count = 0 # number of tokens in documents of class c
             for t in self.vocab:
                 terms = sum([tl.count(t) for tl in class_index[c]])
                 term_counts[t] = terms
