@@ -1,0 +1,77 @@
+Grade: 20.00/50.00
+
+3 Deduction(s):
+
+--------------
+#1: 10.00 points
+Failing test: test_get_top_words: 
+        @points=10
+        
+Traceback (most recent call last):
+  File "assignments-sol/a3/a3_test.py", line 49, in test_get_top_words
+    self.assertAlmostEqual(res[0][0], 2.25, 2)
+AssertionError: 1.8 != 2.25 within 2 places
+
+source:
+    def test_get_top_words(self):
+         """
+         @points=10
+         """
+         docs = [Document(label='spam', tokens=['a', 'b']), Document(label='spam', tokens=['b', 'c']), Document(label='ham', tokens=['c', 'd'])]
+         nb = NaiveBayes()
+         nb.train(docs)
+         res = nb.get_top_words('spam', 3)
+         self.assertAlmostEqual(res[0][0], 2.25, 2)
+         self.assertEqual(res[0][1], 'b')
+         self.assertAlmostEqual(res[1][0], 1.5, 1)
+         self.assertEqual(res[1][1], 'a')
+         self.assertAlmostEqual(res[2][0], 0.75, 2)
+         self.assertEqual(res[2][1], 'c')
+--------------
+
+--------------
+#2: 10.00 points
+Failing test: test_get_word_probability: 
+        @points=10
+        
+Traceback (most recent call last):
+  File "assignments-sol/a3/a3_test.py", line 17, in test_get_word_probability
+    self.assertAlmostEqual(nb.get_word_probability('spam', 'a'), 0.25, 2)
+AssertionError: 0.4 != 0.25 within 2 places
+
+source:
+    def test_get_word_probability(self):
+         """
+         @points=10
+         """
+         docs = [Document(label='spam', tokens=['a', 'b']), Document(label='spam', tokens=['b', 'c']), Document(label='ham', tokens=['c', 'd'])]
+         nb = NaiveBayes()
+         nb.train(docs)
+         self.assertAlmostEqual(nb.get_word_probability('spam', 'a'), 0.25, 2)
+         self.assertAlmostEqual(nb.get_word_probability('spam', 'b'), 0.375, 3)
+         self.assertAlmostEqual(nb.get_word_probability('spam', 'c'), 0.25, 3)
+--------------
+
+--------------
+#3: 10.00 points
+Failing test: test_get_word_probability2: 
+        @points=10
+        
+Traceback (most recent call last):
+  File "assignments-sol/a3/a3_test.py", line 28, in test_get_word_probability2
+    self.assertAlmostEqual(nb.get_word_probability('ham', 'a'), 0.167, 3)
+AssertionError: 0.3333333333333333 != 0.167 within 3 places
+
+source:
+    def test_get_word_probability2(self):
+         """
+         @points=10
+         """
+         docs = [Document(label='spam', tokens=['a', 'b']), Document(label='spam', tokens=['b', 'c']), Document(label='ham', tokens=['c', 'd'])]
+         nb = NaiveBayes()
+         nb.train(docs)
+         self.assertAlmostEqual(nb.get_word_probability('ham', 'a'), 0.167, 3)
+         self.assertAlmostEqual(nb.get_word_probability('ham', 'b'), 0.167, 3)
+         self.assertAlmostEqual(nb.get_word_probability('ham', 'c'), 0.333, 3)
+--------------
+
