@@ -59,6 +59,8 @@ def get_top_pageranks(inlinks, outlinks, b, n=50, iters=20):
     >>> res[0]  # doctest:+ELLIPSIS
     ('a', 0.6666...
     """
+    urls = SortedList(outlinks.keys())
+    return sorted(compute_pagerank(urls, inlinks, outlinks, b, iters).items())[:n]
     ###TODO
     pass
 
