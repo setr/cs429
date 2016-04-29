@@ -1,5 +1,5 @@
 """ Assignment 6: PageRank. """
-from bs4 import BeautifulSoup
+from bs4 import BeautifulSoup, SoupStrainer
 from sortedcontainers import SortedList, SortedSet, SortedDict
 from collections import Counter
 import glob
@@ -70,8 +70,15 @@ def get_links(names, html):
     ... '''<a href="/wiki/Gerald_Jay_Sussman">xx</a> and <a href="/wiki/Not_Me">xx</a>''')
     SortedSet(['Gerald_Jay_Sussman'], key=None, load=1000)
     """
-    ###TODO
-    pass
+
+    pagenames = SortedSet()
+    for link in BeautifulSoup(html, "html.parser", parse_only=SoupStrainer('a')):
+        if link.has_attr('href'):
+            name = link['href'].split('/')[-1]
+            if name in names:
+                pagenames.add(name)
+    return pagenames
+    
 
 def read_links(path):
     """
@@ -89,9 +96,45 @@ def read_links(path):
     Returns:
       A (inlinks, outlinks) tuple, as defined above (i.e., two SortedDicts)
     """
-    ###TODO
-    pass
+    inlinks, outlinks = SortedDict(), SortedDict()
+    names = read_names(path)
 
+    if os.path.exists(path):  # download and unzip data
+        fullpaths = [(name, os.path.join(path, name)) for name in os.listdir(path)]
+
+        for name, f in fullpaths:
+            print ('reading ' + name)
+            with open(f, 'r') as f:
+                html = f.read()
+            outlinks[name] = get_links(names, html)
+
+    for name, links in outlinks.items():
+        for l in links:
+            if l in inlinks:
+                inlinks[l].add(name)
+            else:
+                inlinks[l] = SortedSet([name])
+
+    return (inlinks, outlinks)
+
+    # for finding accidental misparses 
+    #
+    # print ('Checking outlinks')
+    # for name in outlinks:
+    #     if name not in names:
+    #         print ( 'name' )
+    # print 
+    # print ('Checking inlinks')
+    # for name in inlinks:
+    #     if name not in names:
+    #         print ( 'name' )
+    # print
+    # print ('Checking names is all found')
+    # for name in names:
+    #     if name not in inlinks:
+    #         print ("missing from inlink:" % name)
+    #     if name not in outlinks:
+    #         print ("missing from outlink:" % name)
 
 def print_top_pageranks(topn):
     """ Do not modify. Print a list of name/pagerank tuples. """
