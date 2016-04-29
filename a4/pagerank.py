@@ -60,7 +60,7 @@ def get_top_pageranks(inlinks, outlinks, b, n=50, iters=20):
     ('a', 0.6666...
     """
     urls = SortedList(outlinks.keys())
-    return sorted(compute_pagerank(urls, inlinks, outlinks, b, iters).items())[:n]
+    return sorted(compute_pagerank(urls, inlinks, outlinks, b, iters).items(), key=lambda x: x[1], reverse=True)[:n]
     ###TODO
     pass
 
@@ -126,11 +126,14 @@ def read_links(path):
             outlinks[name].discard(name) # no self-links!
             
     for name, links in outlinks.items():
+        if name not in inlinks:
+            inlinks[name] = SortedSet()  # gaurantees every name at least gets an empty set
+
         for l in links:
             try:
                 inlinks[l].add(name)
             except KeyError:
-                inlinks[l] = SortedSet(name)
+                inlinks[l] = SortedSet([name])
 
     return (inlinks, outlinks)
 
