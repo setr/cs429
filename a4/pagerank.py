@@ -30,10 +30,25 @@ def compute_pagerank(urls, inlinks, outlinks, b=.85, iters=20):
     >>> iter1['b']  # doctest:+ELLIPSIS
     0.333...
     """
-    ###TODO
-    pass
+    # scores[name] = pagerank score
+    scores = SortedDict()
+    for u in urls:  # initialize to 1
+        scores[u] = 1.
 
+    # left side
+    N = len(urls)
+    const = (1./N) * (1. - b)
 
+    # right side
+    for i in range(iters):
+        for u in urls:
+            linksum = 0
+            for link in inlinks[u]:
+                pr = scores[link]
+                linksum += pr / len(outlinks[link])
+            scores[u] = linksum * b + const
+    return scores
+            
 def get_top_pageranks(inlinks, outlinks, b, n=50, iters=20):
     """
     >>> inlinks = SortedDict({'a': ['c'], 'b': set(['a']), 'c': set(['a', 'b'])})
@@ -103,17 +118,17 @@ def read_links(path):
         fullpaths = [(name, os.path.join(path, name)) for name in os.listdir(path)]
 
         for name, f in fullpaths:
-            print ('reading ' + name)
             with open(f, 'r') as f:
                 html = f.read()
             outlinks[name] = get_links(names, html)
-
+            outlinks[name].discard(name) # no self-links!
+            
     for name, links in outlinks.items():
         for l in links:
-            if l in inlinks:
+            try:
                 inlinks[l].add(name)
-            else:
-                inlinks[l] = SortedSet([name])
+            except KeyError:
+                inlinks[l] = SortedSet(name)
 
     return (inlinks, outlinks)
 
